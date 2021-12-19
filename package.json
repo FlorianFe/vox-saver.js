@@ -1,0 +1,17 @@
+{
+  "name": "vox-saver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "vox-saver.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "ava"
+  },
+  "author": "Florian Fechner",
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "^3.15.0",
+    "json-diff": "^0.5.4",
+    "vox-reader": "^2.0.3"
+  }
+}
