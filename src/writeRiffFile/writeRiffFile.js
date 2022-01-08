@@ -1,85 +1,72 @@
-
-const write4ByteFloat = require("../shared/write4ByteFloat/write4ByteFloat");
-const write4ByteInteger = require("../shared/write4ByteInteger/write4ByteInteger");
-const write4ByteString = require("../shared/write4ByteString/write4ByteString");
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const write4ByteInteger_1 = __importDefault(require("../shared/write4ByteInteger/write4ByteInteger"));
+const write4ByteString_1 = __importDefault(require("../shared/write4ByteString/write4ByteString"));
 const flatten = (arr) => {
     return arr.reduce((flat, toFlatten) => {
         return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
     }, []);
 };
-
-
 const writeMAIN = (content) => {
     return [
-        write4ByteString("MAIN"),
-        write4ByteInteger(0), // Header Size
-        write4ByteInteger(content.length), // Content Size
+        (0, write4ByteString_1.default)("MAIN"),
+        (0, write4ByteInteger_1.default)(0),
+        (0, write4ByteInteger_1.default)(content.length),
         ...content,
-    ]
-}
-
+    ];
+};
 const writeSIZE = (size) => {
     return [
-        write4ByteString("SIZE"),
-        write4ByteInteger(12),
-        write4ByteInteger(0),
-
-        write4ByteInteger(size.x),
-        write4ByteInteger(size.y),
-        write4ByteInteger(size.z),
-    ]
-}
-
+        (0, write4ByteString_1.default)("SIZE"),
+        (0, write4ByteInteger_1.default)(12),
+        (0, write4ByteInteger_1.default)(0),
+        (0, write4ByteInteger_1.default)(size.x),
+        (0, write4ByteInteger_1.default)(size.y),
+        (0, write4ByteInteger_1.default)(size.z),
+    ];
+};
 const writeXYZI = (xyzi) => {
-
     const content = flatten(xyzi.values.map(v => {
         return [
             v.x,
             v.y,
             v.z,
             v.i,
-        ]
-    }))
-
+        ];
+    }));
     return flatten([
-        write4ByteString("XYZI"),
-        write4ByteInteger(4 + content.length),
-        write4ByteInteger(0),
-
-        write4ByteInteger(xyzi.numVoxels),
+        (0, write4ByteString_1.default)("XYZI"),
+        (0, write4ByteInteger_1.default)(4 + content.length),
+        (0, write4ByteInteger_1.default)(0),
+        (0, write4ByteInteger_1.default)(xyzi.numVoxels),
         content
-    ])
-}
-
+    ]);
+};
 const writeRGBA = (rgba) => {
-
     const content = flatten(rgba.values.map(color => {
         return [
             color.r,
             color.g,
             color.b,
             color.a,
-        ]
-    }))
-
+        ];
+    }));
     return flatten([
-        write4ByteString("RGBA"),
-        write4ByteInteger(content.length),
-        write4ByteInteger(0),
+        (0, write4ByteString_1.default)("RGBA"),
+        (0, write4ByteInteger_1.default)(content.length),
+        (0, write4ByteInteger_1.default)(0),
         content
     ]);
-}
-
+};
 const writeRiffFile = (voxStructure) => {
-
     const content = flatten([
         writeSIZE(voxStructure.size),
         writeXYZI(voxStructure.xyzi),
         writeRGBA(voxStructure.rgba),
     ]);
-
     return writeMAIN(content);
-}
-
+};
 module.exports = writeRiffFile;
+//# sourceMappingURL=writeRiffFile.js.map
