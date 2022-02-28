@@ -1,2 +1,1 @@
-
-module.exports = require("./src/saveVox");
+export = require("./src/saveVox");
