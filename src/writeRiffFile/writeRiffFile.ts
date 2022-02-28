@@ -71,13 +71,36 @@ const writeRGBA = (rgba : RGBA) => {
 }
 
 const writeRiffFile = (voxStructure : VoxStructure) => {
-
+    console.log(Object.keys(voxStructure))
+    const rest = Object.keys(voxStructure).map((key) => {
+        if (['size','xyzi','rgba'].includes(key)) {
+            return;
+        }
+        
+        try {
+            // @ts-ignore
+            return [...write4ByteString(voxStructure[key].values.id),...voxStructure[key].values];
+        } catch (error) {
+            try {
+                // @ts-ignore
+            console.log('id failed:',voxStructure[key].values.id,error);
+            }
+            catch {
+                
+            }
+        }
+        
+    }).filter((key):key is any[] => key !== undefined)
+    console.log('rest',rest)
+    const compare = writeSIZE(voxStructure.size)
+    console.log('compare',compare)
     const content = flatten([
         writeSIZE(voxStructure.size),
         writeXYZI(voxStructure.xyzi),
         writeRGBA(voxStructure.rgba),
+        ...rest
     ]);
-
+    
     return writeMAIN(content);
 }
 
