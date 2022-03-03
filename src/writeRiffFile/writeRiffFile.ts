@@ -1,7 +1,7 @@
 
 import write4ByteFloat from "../shared/write4ByteFloat/write4ByteFloat"
 import write4ByteInteger from "../shared/write4ByteInteger/write4ByteInteger";
-import write4ByteString from "../shared/write4ByteString/write4ByteString";
+import writeString from "../shared/writeString/writeString";
 
 const flatten = (arr : Array<any>) : Array<any> => {
     return arr.reduce((flat, toFlatten) => {
@@ -11,16 +11,16 @@ const flatten = (arr : Array<any>) : Array<any> => {
 
 const writeMAIN = (content : Array<number>) => {
     return [
-        write4ByteString("MAIN"),
+        writeString("MAIN"),
         write4ByteInteger(0), // Header Size
         write4ByteInteger(content.length), // Content Size
         ...content,
     ]
 }
 
-const writeSIZE = (size : Size) => {
+const writeSIZE = (size : SIZE) => {
     return [
-        write4ByteString("SIZE"),
+        writeString("SIZE"),
         write4ByteInteger(12),
         write4ByteInteger(0),
 
@@ -42,7 +42,7 @@ const writeXYZI = (xyzi : XYZI) => {
     }))
 
     return flatten([
-        write4ByteString("XYZI"),
+        writeString("XYZI"),
         write4ByteInteger(4 + content.length),
         write4ByteInteger(0),
 
@@ -63,43 +63,37 @@ const writeRGBA = (rgba : RGBA) => {
     }))
 
     return flatten([
-        write4ByteString("RGBA"),
+        writeString("RGBA"),
         write4ByteInteger(content.length),
         write4ByteInteger(0),
         content
     ]);
 }
 
+
 const writeRiffFile = (voxStructure : VoxStructure) => {
-    console.log(Object.keys(voxStructure))
+    const content: ValueOf<VoxStructure>[] = [];
     const rest = Object.keys(voxStructure).map((key) => {
-        if (['size','xyzi','rgba'].includes(key)) {
-            return;
+        const value = voxStructure[key as keyof VoxStructure]
+        if (value === undefined) {
+            return
         }
+        value.forEach(subvalue => {
+
+            content.push(functions[key as keyof VoxStructure](subvalue))
+        })
         
-        try {
-            // @ts-ignore
-            return [...write4ByteString(voxStructure[key].values.id),...voxStructure[key].values];
-        } catch (error) {
-            try {
-                // @ts-ignore
-            console.log('id failed:',voxStructure[key].values.id,error);
-            }
-            catch {
-                
-            }
-        }
         
     }).filter((key):key is any[] => key !== undefined)
-    console.log('rest',rest)
-    const compare = writeSIZE(voxStructure.size)
-    console.log('compare',compare)
-    const content = flatten([
-        writeSIZE(voxStructure.size),
-        writeXYZI(voxStructure.xyzi),
-        writeRGBA(voxStructure.rgba),
-        ...rest
-    ]);
+    // console.log('rest',rest)
+    // const compare = writeSIZE(voxStructure.SIZE)
+    // console.log('compare',compare)
+    // const content = flatten([
+    //     writeSIZE(voxStructure.SIZE),
+    //     writeXYZI(voxStructure.XYZI),
+    //     writeRGBA(voxStructure.RGBA),
+    //     ...rest
+    // ]);
     
     return writeMAIN(content);
 }

@@ -1,5 +1,5 @@
 
-const write4ByteString = require("./shared/write4ByteString/write4ByteString");
+const writeString = require("./shared/writeString/writeString");
 const write4ByteInteger = require("./shared/write4ByteInteger/write4ByteInteger");
 const writeRiffFile = require("./writeRiffFile/writeRiffFile");
 
@@ -13,10 +13,8 @@ const flatten = (arr : Array<any>) : Array<any> => {
 
 const saveVox = (voxStructure : VoxStructure) : Array<number> => 
 {
-    const SPACE = " ";
-    
     return flatten([
-        write4ByteString("VOX" + SPACE),
+        writeString("VOX "),
         write4ByteInteger(150),
         writeRiffFile(voxStructure)
     ])

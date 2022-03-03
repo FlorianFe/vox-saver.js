@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const write4ByteInteger_1 = __importDefault(require("../shared/write4ByteInteger/write4ByteInteger"));
-const write4ByteString_1 = __importDefault(require("../shared/write4ByteString/write4ByteString"));
+const writeString_1 = __importDefault(require("../shared/writeString/writeString"));
 const flatten = (arr) => {
     return arr.reduce((flat, toFlatten) => {
         return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
@@ -11,7 +11,7 @@ const flatten = (arr) => {
 };
 const writeMAIN = (content) => {
     return [
-        (0, write4ByteString_1.default)("MAIN"),
+        (0, writeString_1.default)("MAIN"),
         (0, write4ByteInteger_1.default)(0),
         (0, write4ByteInteger_1.default)(content.length),
         ...content,
@@ -19,7 +19,7 @@ const writeMAIN = (content) => {
 };
 const writeSIZE = (size) => {
     return [
-        (0, write4ByteString_1.default)("SIZE"),
+        (0, writeString_1.default)("SIZE"),
         (0, write4ByteInteger_1.default)(12),
         (0, write4ByteInteger_1.default)(0),
         (0, write4ByteInteger_1.default)(size.x),
@@ -37,7 +37,7 @@ const writeXYZI = (xyzi) => {
         ];
     }));
     return flatten([
-        (0, write4ByteString_1.default)("XYZI"),
+        (0, writeString_1.default)("XYZI"),
         (0, write4ByteInteger_1.default)(4 + content.length),
         (0, write4ByteInteger_1.default)(0),
         (0, write4ByteInteger_1.default)(xyzi.numVoxels),
@@ -54,40 +54,32 @@ const writeRGBA = (rgba) => {
         ];
     }));
     return flatten([
-        (0, write4ByteString_1.default)("RGBA"),
+        (0, writeString_1.default)("RGBA"),
         (0, write4ByteInteger_1.default)(content.length),
         (0, write4ByteInteger_1.default)(0),
         content
     ]);
 };
 const writeRiffFile = (voxStructure) => {
-    console.log(Object.keys(voxStructure));
+    const content = [];
     const rest = Object.keys(voxStructure).map((key) => {
-        if (['size', 'xyzi', 'rgba'].includes(key)) {
+        const value = voxStructure[key];
+        if (value === undefined) {
             return;
         }
-        try {
-            // @ts-ignore
-            return [...(0, write4ByteString_1.default)(voxStructure[key].values.id), ...voxStructure[key].values];
-        }
-        catch (error) {
-            try {
-                // @ts-ignore
-                console.log('id failed:', voxStructure[key].values.id, error);
-            }
-            catch (_a) {
-            }
-        }
+        value.forEach(subvalue => {
+            content.push(functions[key](subvalue));
+        });
     }).filter((key) => key !== undefined);
-    console.log('rest', rest);
-    const compare = writeSIZE(voxStructure.size);
-    console.log('compare', compare);
-    const content = flatten([
-        writeSIZE(voxStructure.size),
-        writeXYZI(voxStructure.xyzi),
-        writeRGBA(voxStructure.rgba),
-        ...rest
-    ]);
+    // console.log('rest',rest)
+    // const compare = writeSIZE(voxStructure.SIZE)
+    // console.log('compare',compare)
+    // const content = flatten([
+    //     writeSIZE(voxStructure.SIZE),
+    //     writeXYZI(voxStructure.XYZI),
+    //     writeRGBA(voxStructure.RGBA),
+    //     ...rest
+    // ]);
     return writeMAIN(content);
 };
 module.exports = writeRiffFile;
