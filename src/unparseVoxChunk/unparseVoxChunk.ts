@@ -1,17 +1,23 @@
 import unreadInt from "../shared/unreadInt/unreadInt";
 import writeString from "../shared/writeString/writeString";
 
+
 const unreadDict = (data : { [key: string]: any}) =>
 {
     const entries = Object.entries(data)
     return [unreadInt(entries.length), entries.map(([k, v]) => [writeString(k), writeString(v)])];
 }
-
-const unparseVoxChunk = (id : string, data : unknown) =>
+const flatten = (arr : Array<any>) : Array<any> => {
+  return arr.reduce((flat, toFlatten) => {
+      return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+  }, []);
+};
+const unparseVoxChunk = (id : string, data : any): any[] =>
 {
-  const chunk = []
+  let chunk = []
   // base https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
-  chunk.push(writeString(id))
+  chunk.push(id.split("").map(char => char.charCodeAt(0)))
+  chunk.push([0,0,0,0])
   switch (id) {
     case "MAIN":
       console.warn("MAIN chunk is not implemented ..?..?..");
@@ -45,7 +51,7 @@ const unparseVoxChunk = (id : string, data : unknown) =>
     case "nSHP":
       chunk.push(unreadInt((data as nSHP).nodeId))
       chunk.push(unreadDict((data as nSHP).nodeAttributes))
-      chunk.push(unreadDict((data as nSHP).models))
+      chunk.push((data as nSHP).models.map(c =>unreadDict(c)))
       break
     case "MATL":
       chunk.push(unreadInt((data as MATL).materialId))
@@ -73,32 +79,9 @@ const unparseVoxChunk = (id : string, data : unknown) =>
       console.warn(`Unknown chunk ${id}`)
       break;
   }
-  if(id === 'rOBJ') return {
-    renderAttributes: readDict(data),
-  }
-	if (id === 'rCAM') return {
-    cameraId: read4ByteInteger(data.splice(0,4)),
-    cameraAttributes: readDict(data),
-  }
-	if (id === 'NOTE') {
-    const obj: {
-      numColorNames: number,
-      colorNames: string[],
-    } = {
-    numColorNames: read4ByteInteger(data.splice(0,4)),
-    colorNames: [],
-    }
-    for(let i = 0; i < obj.numColorNames; i++) {
-      obj.colorNames.push(readString(data));
-    }
-    return obj;
-  }
-  if (id === 'IMAP') return {
-    size: read4ByteInteger(data.splice(0,4)),
-    indexAssociations: data.splice(0,256).map((c: number) => read4ByteInteger(c)),
-  }
-
-  return {};
+  chunk = flatten(chunk)
+  chunk.splice(8,0,...unreadInt(chunk.length-8))
+  return chunk;
 }
 
 export = unparseVoxChunk;

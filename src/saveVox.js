@@ -10,7 +10,7 @@ const flatten = (arr) => {
 // https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
 const saveVox = (voxStructure) => {
     return flatten([
-        writeString("VOX "),
+        "VOX ".split("").map(char => char.charCodeAt(0)),
         write4ByteInteger(150),
         writeRiffFile(voxStructure)
     ]);

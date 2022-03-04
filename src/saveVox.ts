@@ -14,7 +14,7 @@ const flatten = (arr : Array<any>) : Array<any> => {
 const saveVox = (voxStructure : VoxStructure) : Array<number> => 
 {
     return flatten([
-        writeString("VOX "),
+        "VOX ".split("").map(char => char.charCodeAt(0)),
         write4ByteInteger(150),
         writeRiffFile(voxStructure)
     ])

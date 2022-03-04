@@ -8,10 +8,16 @@ const unreadDict = (data) => {
     const entries = Object.entries(data);
     return [(0, unreadInt_1.default)(entries.length), entries.map(([k, v]) => [(0, writeString_1.default)(k), (0, writeString_1.default)(v)])];
 };
+const flatten = (arr) => {
+    return arr.reduce((flat, toFlatten) => {
+        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
+};
 const unparseVoxChunk = (id, data) => {
-    const chunk = [];
+    let chunk = [];
     // base https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
-    chunk.push((0, writeString_1.default)(id));
+    chunk.push(id.split("").map(char => char.charCodeAt(0)));
+    chunk.push([0, 0, 0, 0]);
     switch (id) {
         case "MAIN":
             console.warn("MAIN chunk is not implemented ..?..?..");
@@ -45,7 +51,7 @@ const unparseVoxChunk = (id, data) => {
         case "nSHP":
             chunk.push((0, unreadInt_1.default)(data.nodeId));
             chunk.push(unreadDict(data.nodeAttributes));
-            chunk.push(unreadDict(data.models));
+            chunk.push(data.models.map(c => unreadDict(c)));
             break;
         case "MATL":
             chunk.push((0, unreadInt_1.default)(data.materialId));
@@ -73,31 +79,9 @@ const unparseVoxChunk = (id, data) => {
             console.warn(`Unknown chunk ${id}`);
             break;
     }
-    if (id === 'rOBJ')
-        return {
-            renderAttributes: readDict(data),
-        };
-    if (id === 'rCAM')
-        return {
-            cameraId: read4ByteInteger(data.splice(0, 4)),
-            cameraAttributes: readDict(data),
-        };
-    if (id === 'NOTE') {
-        const obj = {
-            numColorNames: read4ByteInteger(data.splice(0, 4)),
-            colorNames: [],
-        };
-        for (let i = 0; i < obj.numColorNames; i++) {
-            obj.colorNames.push(readString(data));
-        }
-        return obj;
-    }
-    if (id === 'IMAP')
-        return {
-            size: read4ByteInteger(data.splice(0, 4)),
-            indexAssociations: data.splice(0, 256).map((c) => read4ByteInteger(c)),
-        };
-    return {};
+    chunk = flatten(chunk);
+    chunk.splice(8, 0, ...(0, unreadInt_1.default)(chunk.length - 8));
+    return chunk;
 };
 module.exports = unparseVoxChunk;
 //# sourceMappingURL=unparseVoxChunk.js.map
