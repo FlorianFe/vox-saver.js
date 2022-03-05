@@ -1,6 +1,4 @@
-
-import write4ByteFloat from "../shared/write4ByteFloat/write4ByteFloat"
-import write4ByteInteger from "../shared/write4ByteInteger/write4ByteInteger";
+import unreadInt from "../shared/unreadInt/unreadInt";
 import writeChars from "../shared/writeChars/writeChars";
 import unparseVoxChunk from "../unparseVoxChunk/unparseVoxChunk";
 
@@ -13,8 +11,8 @@ const flatten = (arr : Array<any>) : Array<any> => {
 const writeMAIN = (content : Array<number>) => {
     return [
         writeChars("MAIN"),
-        write4ByteInteger(0), // Header Size
-        write4ByteInteger(content.length), // Content Size
+        unreadInt(0), // Header Size
+        unreadInt(content.length), // Content Size
         ...content,
     ]
 }

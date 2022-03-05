@@ -1,8 +1,6 @@
 import writeChars from "./shared/writeChars/writeChars";
-
-import writeString from "./shared/writeString/writeString";
-import write4ByteInteger from "./shared/write4ByteInteger/write4ByteInteger";
 import writeRiffFile from "./writeRiffFile/writeRiffFile";
+import unreadInt from "./shared/unreadInt/unreadInt";
 
 const flatten = (arr : Array<any>) : Array<any> => {
     return arr.reduce((flat, toFlatten) => {
@@ -16,7 +14,7 @@ const saveVox = (voxStructure : VoxStructure) : Array<number> =>
 {
     return flatten([
         writeChars("VOX "),
-        write4ByteInteger(150),
+        unreadInt(150),
         writeRiffFile(voxStructure)
     ])
 }
