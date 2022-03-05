@@ -1,7 +1,10 @@
 "use strict";
-const writeString = require("./shared/writeString/writeString");
-const write4ByteInteger = require("./shared/write4ByteInteger/write4ByteInteger");
-const writeRiffFile = require("./writeRiffFile/writeRiffFile");
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const writeChars_1 = __importDefault(require("./shared/writeChars/writeChars"));
+const write4ByteInteger_1 = __importDefault(require("./shared/write4ByteInteger/write4ByteInteger"));
+const writeRiffFile_1 = __importDefault(require("./writeRiffFile/writeRiffFile"));
 const flatten = (arr) => {
     return arr.reduce((flat, toFlatten) => {
         return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
@@ -10,9 +13,9 @@ const flatten = (arr) => {
 // https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
 const saveVox = (voxStructure) => {
     return flatten([
-        "VOX ".split("").map(char => char.charCodeAt(0)),
-        write4ByteInteger(150),
-        writeRiffFile(voxStructure)
+        (0, writeChars_1.default)("VOX "),
+        (0, write4ByteInteger_1.default)(150),
+        (0, writeRiffFile_1.default)(voxStructure)
     ]);
 };
 module.exports = saveVox;

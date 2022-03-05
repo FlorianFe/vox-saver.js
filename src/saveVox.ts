@@ -1,7 +1,8 @@
+import writeChars from "./shared/writeChars/writeChars";
 
-const writeString = require("./shared/writeString/writeString");
-const write4ByteInteger = require("./shared/write4ByteInteger/write4ByteInteger");
-const writeRiffFile = require("./writeRiffFile/writeRiffFile");
+import writeString from "./shared/writeString/writeString";
+import write4ByteInteger from "./shared/write4ByteInteger/write4ByteInteger";
+import writeRiffFile from "./writeRiffFile/writeRiffFile";
 
 const flatten = (arr : Array<any>) : Array<any> => {
     return arr.reduce((flat, toFlatten) => {
@@ -14,7 +15,7 @@ const flatten = (arr : Array<any>) : Array<any> => {
 const saveVox = (voxStructure : VoxStructure) : Array<number> => 
 {
     return flatten([
-        "VOX ".split("").map(char => char.charCodeAt(0)),
+        writeChars("VOX "),
         write4ByteInteger(150),
         writeRiffFile(voxStructure)
     ])

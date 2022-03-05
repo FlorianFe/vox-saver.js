@@ -1,26 +1,36 @@
 "use strict";
-const fs = require('fs');
-const util = require('util');
-const test = require('ava');
-const readVox = require('vox-reader');
-const writeVox = require('../index');
-const { diff } = require("json-diff");
-// test('test deer.vox', (t : any) => 
-// {
-//     const buffer = fs.readFileSync('./test/deer.vox')
-//     const vox = readVox(buffer)
-//     const parsedVox = readVox(writeVox(vox))
-//     t.assert(diff(vox, parsedVox) === undefined, "vox-reader and vox-writer should be the same");
-//     t.pass();
-// });
-test('test extended.vox', (t) => {
-    const buffer = fs.readFileSync('./test/extended.vox');
-    const vox = readVox(buffer);
-    console.log(util.inspect(vox, false, null, true));
-    const writtenVox = writeVox(vox);
-    fs.writeFileSync('./test/extended-out.vox', Buffer.from(writtenVox));
-    const validationVox = readVox(writtenVox);
-    t.assert(diff(vox, validationVox) === undefined, "vox-reader and vox-writer should be the same (handling extended files)");
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __importDefault(require("fs"));
+const util_1 = __importDefault(require("util"));
+const ava_1 = __importDefault(require("ava"));
+const index_1 = __importDefault(require("../index"));
+const vox_saver_1 = __importDefault(require("vox-saver"));
+const json_diff_1 = require("json-diff");
+(0, ava_1.default)('test deer.vox', (t) => {
+    const buffer = fs_1.default.readFileSync('./test/deer.vox');
+    const vox = (0, index_1.default)(buffer);
+    console.log(util_1.default.inspect(vox, false, null, true));
+    const writtenVox = (0, vox_saver_1.default)(vox);
+    const validationVox = (0, index_1.default)(writtenVox);
+    const difference = (0, json_diff_1.diff)(vox, validationVox);
+    t.assert(difference === undefined, "vox-reader and vox-writer should be the same (handling extended files):\n" + difference);
+    const rawDifference = (0, json_diff_1.diff)(Array(...buffer), writtenVox);
+    t.assert(rawDifference === undefined, "vox-reader and vox-writer should be the same (handling extended files) RAW:\n" + rawDifference);
+    t.pass();
+});
+(0, ava_1.default)('test extended.vox', (t) => {
+    const buffer = fs_1.default.readFileSync('./test/extended.vox');
+    const vox = (0, index_1.default)(buffer);
+    console.log(util_1.default.inspect(vox, false, null, true));
+    const writtenVox = (0, vox_saver_1.default)(vox);
+    const validationVox = (0, index_1.default)(writtenVox);
+    const difference = (0, json_diff_1.diff)(vox, validationVox);
+    t.assert(difference === undefined, "vox-reader and vox-writer should be the same (handling extended files):\n" + difference);
+    const rawDifference = (0, json_diff_1.diff)(Array(...buffer), writtenVox);
+    t.assert(rawDifference === undefined, "vox-reader and vox-writer should be the same (handling extended files) RAW:\n" + rawDifference);
     t.pass();
 });
 //# sourceMappingURL=writeVox.test.js.map

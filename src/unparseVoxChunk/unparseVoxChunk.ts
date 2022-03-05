@@ -1,4 +1,5 @@
 import unreadInt from "../shared/unreadInt/unreadInt";
+import writeChars from "../shared/writeChars/writeChars";
 import writeString from "../shared/writeString/writeString";
 
 
@@ -16,7 +17,7 @@ const unparseVoxChunk = (id : string, data : any): any[] =>
 {
   let chunk = []
   // base https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
-  chunk.push(id.split("").map(char => char.charCodeAt(0)))
+  chunk.push(writeChars(id))
   chunk.push([0,0,0,0])
   switch (id) {
     case "MAIN":
@@ -41,17 +42,20 @@ const unparseVoxChunk = (id : string, data : any): any[] =>
       chunk.push(unreadInt((data as nTRN).child))
       chunk.push(unreadInt((data as nTRN).reserved))
       chunk.push(unreadInt((data as nTRN).layer))
+      chunk.push(unreadInt((data as nTRN).numFrames))
       chunk.push((data as nTRN).frames.map(f => unreadDict(f)))
       break
     case "nGRP":
       chunk.push(unreadInt((data as nGRP).nodeId))
       chunk.push(unreadDict((data as nGRP).nodeAttributes))
+      chunk.push(unreadInt((data as nGRP).child))
       chunk.push((data as nGRP).children.map(c => unreadInt(c)))
       break
     case "nSHP":
       chunk.push(unreadInt((data as nSHP).nodeId))
       chunk.push(unreadDict((data as nSHP).nodeAttributes))
-      chunk.push((data as nSHP).models.map(c =>unreadDict(c)))
+      chunk.push(unreadInt((data as nSHP).numModels))
+      chunk.push((data as nSHP).models.map(c =>[unreadInt(c[0]),unreadDict(c[1])]))
       break
     case "MATL":
       chunk.push(unreadInt((data as MATL).materialId))
@@ -70,17 +74,17 @@ const unparseVoxChunk = (id : string, data : any): any[] =>
       chunk.push(unreadDict((data as rCAM).cameraAttributes))
       break
     case "NOTE":
+      chunk.push(unreadInt((data as NOTE).numColorNames))
       chunk.push((data as NOTE).colorNames.map(c => writeString(c)))
       break
     case "IMAP":
-      chunk.push(unreadInt((data as IMAP).size))
-      chunk.push((data as IMAP).indexAssociations.map(i => unreadInt(i)))
+      chunk.push((data as IMAP).indexAssociations)
     default:  
       console.warn(`Unknown chunk ${id}`)
       break;
   }
   chunk = flatten(chunk)
-  chunk.splice(8,0,...unreadInt(chunk.length-8))
+  chunk.splice(4,0,...unreadInt(chunk.length-8))
   return chunk;
 }
 

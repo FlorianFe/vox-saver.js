@@ -1,4 +1,3 @@
-declare type ValueOf<T> = T[keyof T];
 declare type PACK = {
     numModels: number;
 };
@@ -48,9 +47,12 @@ declare type nGRP = {
     child: number;
     children: number[];
 };
-declare type modelAttributes = {
-    _f: string;
-};
+declare type modelAttributes = [
+    number,
+    {
+        _f: string;
+    }
+];
 declare type nSHP = {
     nodeId: number;
     nodeAttributes: any;

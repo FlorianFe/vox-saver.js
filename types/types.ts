@@ -1,6 +1,3 @@
-
-type ValueOf<T> = T[keyof T];
-
 type PACK = {
     numModels: number;
 }
@@ -54,14 +51,14 @@ type nGRP = {
     child: number,
     children: number[],
 }
-type modelAttributes = {
+type modelAttributes = [number,{
     _f: string,
-}
+}]
 type nSHP = {
     nodeId: number,
-      nodeAttributes: any,
-      numModels: number,
-      models: modelAttributes[],
+    nodeAttributes: any,
+    numModels: number,
+    models: modelAttributes[],
 }
 type MATL = {
     materialId: number,
