@@ -1,2 +1,2 @@
-declare const writeRiffFile: (voxStructure: VoxStructure) => (number | number[])[];
+declare const writeRiffFile: (voxStructure: VoxStructure) => any[];
 export = writeRiffFile;
