@@ -1,7 +1,10 @@
 import unreadInt from "../shared/unreadInt/unreadInt";
 import writeChars from "../shared/writeChars/writeChars";
 import writeString from "../shared/writeString/writeString";
-
+import { 
+  PACK, SIZE, XYZI, RGBA, 
+  nTRN, nGRP, nSHP, MATL, 
+  LAYR, rOBJ, rCAM, NOTE, IMAP} from "../../types/types";
 
 const unreadDict = (data : { [key: string]: any}) =>
 {

@@ -1,6 +1,7 @@
 import unreadInt from "../shared/unreadInt/unreadInt";
 import writeChars from "../shared/writeChars/writeChars";
 import unparseVoxChunk from "../unparseVoxChunk/unparseVoxChunk";
+import { VoxStructure } from "../../types/types";
 
 const flatten = (arr : Array<any>) : Array<any> => {
     return arr.reduce((flat, toFlatten) => {
