@@ -2,7 +2,8 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const write4ByteInteger_1 = __importDefault(require("../shared/write4ByteInteger/write4ByteInteger"));
+const unreadInt_1 = __importDefault(require("../shared/unreadInt/unreadInt"));
+const writeChars_1 = __importDefault(require("../shared/writeChars/writeChars"));
 const unparseVoxChunk_1 = __importDefault(require("../unparseVoxChunk/unparseVoxChunk"));
 const flatten = (arr) => {
     return arr.reduce((flat, toFlatten) => {
@@ -11,9 +12,9 @@ const flatten = (arr) => {
 };
 const writeMAIN = (content) => {
     return [
-        "MAIN".split("").map(char => char.charCodeAt(0)),
-        (0, write4ByteInteger_1.default)(0),
-        (0, write4ByteInteger_1.default)(content.length),
+        (0, writeChars_1.default)("MAIN"),
+        (0, unreadInt_1.default)(0),
+        (0, unreadInt_1.default)(content.length),
         ...content,
     ];
 };
@@ -25,11 +26,13 @@ const writeRiffFile = (voxStructure) => {
             return;
         }
         value.forEach(subvalue => {
-            content.push((0, unparseVoxChunk_1.default)(key, subvalue));
+            content.push({ key, subvalue });
         });
     });
-    content = content.filter((key) => key !== undefined);
-    content = flatten(writeMAIN(content));
+    content = content.sort((a, b) => a.subvalue.index - b.subvalue.index);
+    content = content.map(chunks => (0, unparseVoxChunk_1.default)(chunks.key, chunks.subvalue));
+    content = flatten(content.filter((key) => key !== undefined));
+    content = writeMAIN(content);
     return content;
 };
 module.exports = writeRiffFile;

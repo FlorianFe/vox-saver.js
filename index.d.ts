@@ -1,2 +1,2 @@
-declare const _default: any;
-export = _default;
+import saveVox from "./src/saveVox";
+export = saveVox;

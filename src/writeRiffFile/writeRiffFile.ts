@@ -1,8 +1,7 @@
-
-import write4ByteFloat from "../shared/write4ByteFloat/write4ByteFloat"
-import write4ByteInteger from "../shared/write4ByteInteger/write4ByteInteger";
-import writeString from "../shared/writeString/writeString";
+import unreadInt from "../shared/unreadInt/unreadInt";
+import writeChars from "../shared/writeChars/writeChars";
 import unparseVoxChunk from "../unparseVoxChunk/unparseVoxChunk";
+import { VoxStructure } from "../../types/types";
 
 const flatten = (arr : Array<any>) : Array<any> => {
     return arr.reduce((flat, toFlatten) => {
@@ -12,9 +11,9 @@ const flatten = (arr : Array<any>) : Array<any> => {
 
 const writeMAIN = (content : Array<number>) => {
     return [
-        "MAIN".split("").map(char => char.charCodeAt(0)),
-        write4ByteInteger(0), // Header Size
-        write4ByteInteger(content.length), // Content Size
+        writeChars("MAIN"),
+        unreadInt(0), // Header Size
+        unreadInt(content.length), // Content Size
         ...content,
     ]
 }
@@ -22,17 +21,21 @@ const writeMAIN = (content : Array<number>) => {
 
 const writeRiffFile = (voxStructure : VoxStructure) => {
     let content: any[] = [];
-    Object.keys(voxStructure).forEach((key) => {
+    Object.keys(voxStructure).forEach((key: string) => {
         const value = voxStructure[key as keyof VoxStructure]
         if (value === undefined) {
             return
         }
+
         value.forEach(subvalue => {
-            content.push(unparseVoxChunk(key,subvalue))
+            content.push({key, subvalue})
         })
     })
-    content = content.filter((key):key is any[] => key !== undefined)
-    content = flatten(writeMAIN(content))
+    
+    content = content.sort((a,b) => a.subvalue.index - b.subvalue.index)
+    content = content.map(chunks => unparseVoxChunk(chunks.key,chunks.subvalue))
+    content = flatten(content.filter((key):key is any[] => key !== undefined))
+    content = writeMAIN(content)
     return content;
 }
 

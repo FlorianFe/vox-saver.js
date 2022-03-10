@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const unreadInt_1 = __importDefault(require("../shared/unreadInt/unreadInt"));
+const writeChars_1 = __importDefault(require("../shared/writeChars/writeChars"));
 const writeString_1 = __importDefault(require("../shared/writeString/writeString"));
 const unreadDict = (data) => {
     const entries = Object.entries(data);
@@ -16,7 +17,7 @@ const flatten = (arr) => {
 const unparseVoxChunk = (id, data) => {
     let chunk = [];
     // base https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
-    chunk.push(id.split("").map(char => char.charCodeAt(0)));
+    chunk.push((0, writeChars_1.default)(id));
     chunk.push([0, 0, 0, 0]);
     switch (id) {
         case "MAIN":
@@ -41,17 +42,20 @@ const unparseVoxChunk = (id, data) => {
             chunk.push((0, unreadInt_1.default)(data.child));
             chunk.push((0, unreadInt_1.default)(data.reserved));
             chunk.push((0, unreadInt_1.default)(data.layer));
+            chunk.push((0, unreadInt_1.default)(data.numFrames));
             chunk.push(data.frames.map(f => unreadDict(f)));
             break;
         case "nGRP":
             chunk.push((0, unreadInt_1.default)(data.nodeId));
             chunk.push(unreadDict(data.nodeAttributes));
+            chunk.push((0, unreadInt_1.default)(data.child));
             chunk.push(data.children.map(c => (0, unreadInt_1.default)(c)));
             break;
         case "nSHP":
             chunk.push((0, unreadInt_1.default)(data.nodeId));
             chunk.push(unreadDict(data.nodeAttributes));
-            chunk.push(data.models.map(c => unreadDict(c)));
+            chunk.push((0, unreadInt_1.default)(data.numModels));
+            chunk.push(data.models.map(c => [(0, unreadInt_1.default)(c[0]), unreadDict(c[1])]));
             break;
         case "MATL":
             chunk.push((0, unreadInt_1.default)(data.materialId));
@@ -70,17 +74,17 @@ const unparseVoxChunk = (id, data) => {
             chunk.push(unreadDict(data.cameraAttributes));
             break;
         case "NOTE":
+            chunk.push((0, unreadInt_1.default)(data.numColorNames));
             chunk.push(data.colorNames.map(c => (0, writeString_1.default)(c)));
             break;
         case "IMAP":
-            chunk.push((0, unreadInt_1.default)(data.size));
-            chunk.push(data.indexAssociations.map(i => (0, unreadInt_1.default)(i)));
+            chunk.push(data.indexAssociations);
         default:
             console.warn(`Unknown chunk ${id}`);
             break;
     }
     chunk = flatten(chunk);
-    chunk.splice(8, 0, ...(0, unreadInt_1.default)(chunk.length - 8));
+    chunk.splice(4, 0, ...(0, unreadInt_1.default)(chunk.length - 8));
     return chunk;
 };
 module.exports = unparseVoxChunk;
