@@ -51,7 +51,7 @@ const vox = {
 }
 
 const writtenVox = writeVox(vox)
-fs.writeFileSync('./test/sphere.vox', Buffer.from(writtenVox))
+fs.writeFileSync('./sphere.vox', Buffer.from(writtenVox))
 
 ```
 
