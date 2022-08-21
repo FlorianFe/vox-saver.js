@@ -1,9 +1,9 @@
-
-import write4ByteFloat from "../shared/write4ByteFloat/write4ByteFloat"
-import write4ByteInteger from "../shared/write4ByteInteger/write4ByteInteger";
-import writeString from "../shared/writeString/writeString";
+import unreadInt from "../shared/unreadInt/unreadInt";
+import writeChars from "../shared/writeChars/writeChars";
 import unparseVoxChunk from "../unparseVoxChunk/unparseVoxChunk";
 import isObject from "lodash/isObject";
+import { VoxStructure } from "../../types/types";
+import write4ByteInteger from "../shared/write4ByteInteger/write4ByteInteger";
 
 const flatten = (arr : Array<any>) : Array<any> => {
     return arr.reduce((flat, toFlatten) => {
@@ -23,13 +23,11 @@ const writeMAIN = (content : Array<number>) => {
 
 const writeRiffFile = (voxStructure : VoxStructure) => {
     let content: any[] = [];
-    Object.keys(voxStructure).forEach((key) => {
+    Object.keys(voxStructure).forEach((key: string) => {
         const value = voxStructure[key as keyof VoxStructure]
         if (value === undefined || (isObject(value) && Object.keys(value).length === 0)) {
             return
         }
-        
-        console.log("key", key)
         content.push(unparseVoxChunk(key,value))
     })
 

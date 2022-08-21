@@ -1,24 +1,44 @@
 {
   "name": "vox-saver",
-  "version": "1.1.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "Takes a JavaScript Object of .vox file data and returns a Byte Array with all the containing informations",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "compile": "tsc",
     "test": "tsc && ava"
   },
+  "keywords": [
+    "voxel",
+    "magicavoxel",
+    "vox",
+    "file",
+    "reader",
+    "loader"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FlorianFe/vox-saver.js.git"
+  },
   "author": "Florian Fechner",
   "license": "MIT",
   "devDependencies": {
+<<<<<<< HEAD
     "@types/lodash": "^4.14.184",
+=======
+    "@types/json-diff": "^0.7.0",
+>>>>>>> 4944c310f1e8f16236b57a9c2cac557a86ed225f
     "@types/node": "^17.0.8",
     "ava": "^3.15.0",
     "json-diff": "^0.5.4",
     "lodash": "^4.17.21",
     "ramda": "^0.28.0",
     "typescript": "^4.5.4",
+<<<<<<< HEAD
     "vox-reader": "^2.1.2"
+=======
+    "vox-reader": "^3.0.0"
+>>>>>>> 4944c310f1e8f16236b57a9c2cac557a86ed225f
   },
   "ava": {
     "timeout": "2m"

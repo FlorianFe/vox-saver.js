@@ -1,1 +1,2 @@
-export = require("./src/saveVox");
+import saveVox from "./src/saveVox";
+export = saveVox;

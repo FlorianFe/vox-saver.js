@@ -1,7 +1,10 @@
 import unreadInt from "../shared/unreadInt/unreadInt";
 import write4ByteInteger from "../shared/write4ByteInteger/write4ByteInteger";
 import writeString from "../shared/writeString/writeString";
-
+import { 
+  PACK, SIZE, XYZI, RGBA, 
+  nTRN, nGRP, nSHP, MATL, 
+  LAYR, rOBJ, rCAM, NOTE, IMAP} from "../../types/types";
 
 const unreadDict = (data : { [key: string]: any}) =>
 {
@@ -17,7 +20,6 @@ const unparseVoxChunk = (id : string, data : any): any[] =>
 {
   let chunk = []
   // base https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
-
   chunk.push(id.toUpperCase().split("").map(char => char.charCodeAt(0)))
   
   switch (id.toUpperCase()) {
@@ -54,9 +56,8 @@ const unparseVoxChunk = (id : string, data : any): any[] =>
       console.warn(`Unknown chunk ${id}`)
       return [];
   }
-  chunk = flatten(chunk)
 
-  return chunk;
+  return flatten(chunk);
 }
 
 export = unparseVoxChunk;

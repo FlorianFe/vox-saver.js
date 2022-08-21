@@ -50,8 +50,7 @@ const unparseVoxChunk = (id, data) => {
             console.warn(`Unknown chunk ${id}`);
             return [];
     }
-    chunk = flatten(chunk);
-    return chunk;
+    return flatten(chunk);
 };
 module.exports = unparseVoxChunk;
 //# sourceMappingURL=unparseVoxChunk.js.map

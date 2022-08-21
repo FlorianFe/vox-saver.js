@@ -5,8 +5,8 @@ const test = require('ava');
 const readVox = require('vox-reader');
 const writeVox = require('../index');
 const { diff } = require("json-diff");
+const { omit, flatten } = require("ramda");
 const { range } = require("lodash");
-const { flatten, omit } = require("ramda");
 test('test extended.vox', (t) => {
     const buffer = fs.readFileSync('./test/extended.vox');
     const parsedBuffer = readVox(buffer);
@@ -15,9 +15,7 @@ test('test extended.vox', (t) => {
         .map(([key, _value]) => key), parsedBuffer);
     console.log(util.inspect(vox, false, null, true));
     const writtenVox = writeVox(vox);
-    fs.writeFileSync('./test/extended-out.vox', Buffer.from(writtenVox));
     const validationVox = readVox(writtenVox);
-    console.log(util.inspect(validationVox, false, null, true));
     t.assert(diff(vox, validationVox) === undefined, "vox-reader and vox-writer should be the same (handling extended files)");
     t.pass();
 });

@@ -1,13 +1,14 @@
-declare type ValueOf<T> = T[keyof T];
-declare type PACK = {
+export declare type PACK = {
     numModels: number;
+    index?: number;
 };
-declare type SIZE = {
+export declare type SIZE = {
     x: number;
     y: number;
     z: number;
+    index?: number;
 };
-declare type XYZI = {
+export declare type XYZI = {
     numVoxels: number;
     values: Array<{
         x: number;
@@ -15,25 +16,27 @@ declare type XYZI = {
         z: number;
         i: number;
     }>;
+    index?: number;
 };
-declare type RGBA = {
+export declare type RGBA = {
     values: Array<{
         r: number;
         g: number;
         b: number;
         a: number;
     }>;
+    index?: number;
 };
-declare type frameAttributes = {
+export declare type frameAttributes = {
     _r: string;
     _t: string;
     _f: string;
 };
-declare type nodeAttributes = {
+export declare type nodeAttributes = {
     _name: string;
     _hidden?: string;
 };
-declare type nTRN = {
+export declare type nTRN = {
     nodeId: number;
     nodeAttributes: nodeAttributes;
     child: number;
@@ -41,39 +44,48 @@ declare type nTRN = {
     layer: number;
     numFrames: number;
     frames: frameAttributes[];
+    index?: number;
 };
-declare type nGRP = {
+export declare type nGRP = {
     nodeId: number;
     nodeAttributes: nodeAttributes;
     child: number;
     children: number[];
+    index?: number;
 };
-declare type modelAttributes = {
-    _f: string;
-};
-declare type nSHP = {
+export declare type modelAttributes = [
+    number,
+    {
+        _f: string;
+    }
+];
+export declare type nSHP = {
     nodeId: number;
     nodeAttributes: any;
     numModels: number;
     models: modelAttributes[];
+    index?: number;
 };
-declare type MATL = {
+export declare type MATL = {
     materialId: number;
     materialProperties: any;
+    index?: number;
 };
-declare type layerAttributes = {
+export declare type layerAttributes = {
     _name: string;
     _hidden?: string;
 };
-declare type LAYR = {
+export declare type LAYR = {
     layerId: number;
     layerAttributes: layerAttributes;
     reservedId: -1;
+    index?: number;
 };
-declare type rOBJ = {
+export declare type rOBJ = {
     renderAttributes: any;
+    index?: number;
 };
-declare type cameraAttributes = {
+export declare type cameraAttributes = {
     _mode: string;
     _focus: string;
     _angle: string;
@@ -81,19 +93,28 @@ declare type cameraAttributes = {
     _frustum: string;
     _fov: string;
 };
-declare type rCAM = {
+export declare type rCAM = {
     cameraId: number;
     cameraAttributes: cameraAttributes;
+    index?: number;
 };
-declare type NOTE = {
+export declare type NOTE = {
     numColorNames: number;
     colorNames: string[];
+    index?: number;
 };
-declare type IMAP = {
+export declare type IMAP = {
     size: number;
     indexAssociations: number[];
+    index?: number;
 };
-declare type VoxStructure = {
+export declare type VoxNode = {
+    id: string;
+    data: any;
+    children: Array<VoxNode>;
+    index?: number;
+};
+export declare type VoxStructure = {
     PACK?: PACK[];
     SIZE: SIZE[];
     XYZI: XYZI[];
