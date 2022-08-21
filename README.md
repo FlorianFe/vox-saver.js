@@ -58,5 +58,3 @@ fs.writeFileSync('./test/sphere.vox', Buffer.from(writtenVox))
 ## 📖 License
 
 (c) 2022 Florian Fechner. [MIT License](https://github.com/FlorianFe/vox-saver.js/blob/master/LICENSE)
-
-Extended features added by Maximilian Gaedig
