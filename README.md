@@ -30,7 +30,7 @@ const xyziValues =
     flatten(range(0, SIZE).map((z : number) => 
         range(0, SIZE).map((y : number) => 
             range(0, SIZE).map((x : number) => 
-                ({ x, y, z, i: checkIfInsideSphere(x, y, z) ? 1 : 0 })
+                ({ x, y, z, i: 1 })
             )
         )
     ))
