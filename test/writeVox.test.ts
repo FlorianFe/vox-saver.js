@@ -59,13 +59,10 @@ test('generate sphere', (t : any) =>
         },
         rgba: {
             values: [
-                {r: 255, g: 255, b: 255, a: 0},
-                ...range(0, 254).map(() => ({r: 255, g: 255, b: 255, a: 255})),
+                ...range(0, 255).map(() => ({r: 255, g: 255, b: 255, a: 255})),
             ]
         }
     }
-
-    console.log(vox);
 
     const writtenVox = writeVox(vox)
     fs.writeFileSync('./test/sphere.vox', Buffer.from(writtenVox))

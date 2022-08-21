@@ -21,7 +21,7 @@ test('test extended.vox', (t) => {
 });
 test('generate sphere', (t) => {
     const SIZE = 20;
-    const RADIUS = 8;
+    const RADIUS = 5;
     const checkIfInsideSphere = (x, y, z) => {
         const cx = x - SIZE / 2;
         const cy = y - SIZE / 2;
@@ -38,12 +38,10 @@ test('generate sphere', (t) => {
         },
         rgba: {
             values: [
-                { r: 255, g: 255, b: 255, a: 0 },
-                ...range(0, 254).map(() => ({ r: 255, g: 255, b: 255, a: 255 })),
+                ...range(0, 255).map(() => ({ r: 255, g: 255, b: 255, a: 255 })),
             ]
         }
     };
-    console.log(vox);
     const writtenVox = writeVox(vox);
     fs.writeFileSync('./test/sphere.vox', Buffer.from(writtenVox));
     t.pass();
