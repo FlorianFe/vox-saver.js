@@ -44,9 +44,7 @@ const vox = {
         values: xyziValues
     },
     rgba: {
-        values: [
-            ...range(0, 255).map(() => ({r: 255, g: 255, b: 255, a: 255})),
-        ]
+        values: range(0, 255).map(() => ({r: 255, g: 255, b: 255, a: 255}))
     }
 }
 
