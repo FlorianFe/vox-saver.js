@@ -1,4 +1,5 @@
 import unreadInt from "../shared/unreadInt/unreadInt";
+import write4ByteInteger from "../shared/write4ByteInteger/write4ByteInteger";
 import writeString from "../shared/writeString/writeString";
 
 
@@ -16,71 +17,45 @@ const unparseVoxChunk = (id : string, data : any): any[] =>
 {
   let chunk = []
   // base https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
-  chunk.push(id.split("").map(char => char.charCodeAt(0)))
-  chunk.push([0,0,0,0])
-  switch (id) {
+
+  chunk.push(id.toUpperCase().split("").map(char => char.charCodeAt(0)))
+  
+  switch (id.toUpperCase()) {
     case "MAIN":
-      console.warn("MAIN chunk is not implemented ..?..?..");
-      break;
+      throw Error("Main Chunk must be placed in root!")
     case "PACK":
+      chunk.push(write4ByteInteger(4)) // Header Size
+      chunk.push(write4ByteInteger(0)) // Content Size
       chunk.push(unreadInt((data as PACK).numModels))
-      break
+      break;
     case "SIZE":
-      chunk.push([unreadInt((data as SIZE).x), unreadInt((data as SIZE).y), unreadInt((data as SIZE).z)])
-      break
+      chunk.push(write4ByteInteger(12)) // Header Size
+      chunk.push(write4ByteInteger(0)) // no children
+      chunk.push(write4ByteInteger((data as SIZE).x))
+      chunk.push(write4ByteInteger((data as SIZE).y))
+      chunk.push(write4ByteInteger((data as SIZE).z))
+      break;
     case "XYZI":
-      chunk.push(unreadInt((data as XYZI).numVoxels))
-      chunk.push((data as XYZI).values.map(c => [c.x, c.y, c.z, c.i]))
-      break
+      const xyziValues = (data as XYZI).values.map(v => [v.x, v.y, v.z, v.i]);
+
+      chunk.push(write4ByteInteger(4 + 4 * xyziValues.length)) // Header Size
+      chunk.push(write4ByteInteger(0)) // no children
+      chunk.push(write4ByteInteger(xyziValues.length)); 
+      chunk.push(flatten(xyziValues))
+      break;
     case "RGBA":
-      chunk.push((data as RGBA).values.map(c => [c.r, c.g, c.b, c.a]))
-      break
-    case "nTRN":
-      chunk.push(unreadInt((data as nTRN).nodeId))
-      chunk.push(unreadDict((data as nTRN).nodeAttributes))
-      chunk.push(unreadInt((data as nTRN).child))
-      chunk.push(unreadInt((data as nTRN).reserved))
-      chunk.push(unreadInt((data as nTRN).layer))
-      chunk.push((data as nTRN).frames.map(f => unreadDict(f)))
-      break
-    case "nGRP":
-      chunk.push(unreadInt((data as nGRP).nodeId))
-      chunk.push(unreadDict((data as nGRP).nodeAttributes))
-      chunk.push((data as nGRP).children.map(c => unreadInt(c)))
-      break
-    case "nSHP":
-      chunk.push(unreadInt((data as nSHP).nodeId))
-      chunk.push(unreadDict((data as nSHP).nodeAttributes))
-      chunk.push((data as nSHP).models.map(c =>unreadDict(c)))
-      break
-    case "MATL":
-      chunk.push(unreadInt((data as MATL).materialId))
-      chunk.push(unreadDict((data as MATL).materialProperties))
-      break
-    case "LAYR":
-      chunk.push(unreadInt((data as LAYR).layerId))
-      chunk.push(unreadDict((data as LAYR).layerAttributes))
-      chunk.push(unreadInt((data as LAYR).reservedId))
-      break
-    case "rOBJ":
-      chunk.push(unreadDict((data as rOBJ).renderAttributes))
-      break
-    case "rCAM":
-      chunk.push(unreadInt((data as rCAM).cameraId))
-      chunk.push(unreadDict((data as rCAM).cameraAttributes))
-      break
-    case "NOTE":
-      chunk.push((data as NOTE).colorNames.map(c => writeString(c)))
-      break
-    case "IMAP":
-      chunk.push(unreadInt((data as IMAP).size))
-      chunk.push((data as IMAP).indexAssociations.map(i => unreadInt(i)))
+      const rgbaValues = (data as RGBA).values.map(c => [c.r, c.g, c.b, c.a]);
+
+      chunk.push(write4ByteInteger(flatten(rgbaValues).length)) // Header Size
+      chunk.push(write4ByteInteger(0)) // no children
+      chunk.push(flatten(rgbaValues))
+      break;
     default:  
       console.warn(`Unknown chunk ${id}`)
-      break;
+      return [];
   }
   chunk = flatten(chunk)
-  chunk.splice(8,0,...unreadInt(chunk.length-8))
+
   return chunk;
 }
 

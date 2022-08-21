@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const unreadInt_1 = __importDefault(require("../shared/unreadInt/unreadInt"));
+const write4ByteInteger_1 = __importDefault(require("../shared/write4ByteInteger/write4ByteInteger"));
 const writeString_1 = __importDefault(require("../shared/writeString/writeString"));
 const unreadDict = (data) => {
     const entries = Object.entries(data);
@@ -16,71 +17,40 @@ const flatten = (arr) => {
 const unparseVoxChunk = (id, data) => {
     let chunk = [];
     // base https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
-    chunk.push(id.split("").map(char => char.charCodeAt(0)));
-    chunk.push([0, 0, 0, 0]);
-    switch (id) {
+    chunk.push(id.toUpperCase().split("").map(char => char.charCodeAt(0)));
+    switch (id.toUpperCase()) {
         case "MAIN":
-            console.warn("MAIN chunk is not implemented ..?..?..");
-            break;
+            throw Error("Main Chunk must be placed in root!");
         case "PACK":
+            chunk.push((0, write4ByteInteger_1.default)(4)); // Header Size
+            chunk.push((0, write4ByteInteger_1.default)(0)); // Content Size
             chunk.push((0, unreadInt_1.default)(data.numModels));
             break;
         case "SIZE":
-            chunk.push([(0, unreadInt_1.default)(data.x), (0, unreadInt_1.default)(data.y), (0, unreadInt_1.default)(data.z)]);
+            chunk.push((0, write4ByteInteger_1.default)(12)); // Header Size
+            chunk.push((0, write4ByteInteger_1.default)(0)); // no children
+            chunk.push((0, write4ByteInteger_1.default)(data.x));
+            chunk.push((0, write4ByteInteger_1.default)(data.y));
+            chunk.push((0, write4ByteInteger_1.default)(data.z));
             break;
         case "XYZI":
-            chunk.push((0, unreadInt_1.default)(data.numVoxels));
-            chunk.push(data.values.map(c => [c.x, c.y, c.z, c.i]));
+            const xyziValues = data.values.map(v => [v.x, v.y, v.z, v.i]);
+            chunk.push((0, write4ByteInteger_1.default)(4 + 4 * xyziValues.length)); // Header Size
+            chunk.push((0, write4ByteInteger_1.default)(0)); // no children
+            chunk.push((0, write4ByteInteger_1.default)(xyziValues.length));
+            chunk.push(flatten(xyziValues));
             break;
         case "RGBA":
-            chunk.push(data.values.map(c => [c.r, c.g, c.b, c.a]));
+            const rgbaValues = data.values.map(c => [c.r, c.g, c.b, c.a]);
+            chunk.push((0, write4ByteInteger_1.default)(flatten(rgbaValues).length)); // Header Size
+            chunk.push((0, write4ByteInteger_1.default)(0)); // no children
+            chunk.push(flatten(rgbaValues));
             break;
-        case "nTRN":
-            chunk.push((0, unreadInt_1.default)(data.nodeId));
-            chunk.push(unreadDict(data.nodeAttributes));
-            chunk.push((0, unreadInt_1.default)(data.child));
-            chunk.push((0, unreadInt_1.default)(data.reserved));
-            chunk.push((0, unreadInt_1.default)(data.layer));
-            chunk.push(data.frames.map(f => unreadDict(f)));
-            break;
-        case "nGRP":
-            chunk.push((0, unreadInt_1.default)(data.nodeId));
-            chunk.push(unreadDict(data.nodeAttributes));
-            chunk.push(data.children.map(c => (0, unreadInt_1.default)(c)));
-            break;
-        case "nSHP":
-            chunk.push((0, unreadInt_1.default)(data.nodeId));
-            chunk.push(unreadDict(data.nodeAttributes));
-            chunk.push(data.models.map(c => unreadDict(c)));
-            break;
-        case "MATL":
-            chunk.push((0, unreadInt_1.default)(data.materialId));
-            chunk.push(unreadDict(data.materialProperties));
-            break;
-        case "LAYR":
-            chunk.push((0, unreadInt_1.default)(data.layerId));
-            chunk.push(unreadDict(data.layerAttributes));
-            chunk.push((0, unreadInt_1.default)(data.reservedId));
-            break;
-        case "rOBJ":
-            chunk.push(unreadDict(data.renderAttributes));
-            break;
-        case "rCAM":
-            chunk.push((0, unreadInt_1.default)(data.cameraId));
-            chunk.push(unreadDict(data.cameraAttributes));
-            break;
-        case "NOTE":
-            chunk.push(data.colorNames.map(c => (0, writeString_1.default)(c)));
-            break;
-        case "IMAP":
-            chunk.push((0, unreadInt_1.default)(data.size));
-            chunk.push(data.indexAssociations.map(i => (0, unreadInt_1.default)(i)));
         default:
             console.warn(`Unknown chunk ${id}`);
-            break;
+            return [];
     }
     chunk = flatten(chunk);
-    chunk.splice(8, 0, ...(0, unreadInt_1.default)(chunk.length - 8));
     return chunk;
 };
 module.exports = unparseVoxChunk;
