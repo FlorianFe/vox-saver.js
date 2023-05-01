@@ -1,6 +1,6 @@
 {
   "name": "vox-saver",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Takes a JavaScript Object of .vox file data and returns a Byte Array with all the containing informations",
   "main": "index.js",
   "scripts": {
