@@ -11,7 +11,7 @@ const { range} = require("lodash")
 
 test('test extended.vox', (t : any) => 
 {
-    const buffer = fs.readFileSync('./test/extended.vox')
+    const buffer = fs.readFileSync('./test/deer.vox')
     const parsedBuffer = readVox(buffer);
     const vox = omit(
         Object.entries(parsedBuffer)

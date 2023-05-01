@@ -8,7 +8,7 @@ const { diff } = require("json-diff");
 const { omit, flatten } = require("ramda");
 const { range } = require("lodash");
 test('test extended.vox', (t) => {
-    const buffer = fs.readFileSync('./test/extended.vox');
+    const buffer = fs.readFileSync('./test/deer.vox');
     const parsedBuffer = readVox(buffer);
     const vox = omit(Object.entries(parsedBuffer)
         .filter(([_key, value]) => Object.keys(value).length === 0)

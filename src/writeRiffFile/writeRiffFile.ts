@@ -4,7 +4,6 @@ import unparseVoxChunk from "../unparseVoxChunk/unparseVoxChunk";
 import isObject from "lodash/isObject";
 import { VoxStructure } from "../../types/types";
 import write4ByteInteger from "../shared/write4ByteInteger/write4ByteInteger";
-import { flattenDeep } from "lodash";
 
 
 const writeMAIN = (content : Array<number>) => {
@@ -27,8 +26,7 @@ const writeRiffFile = (voxStructure : VoxStructure) => {
         content.push(unparseVoxChunk(key,value))
     })
 
-    console.log(flattenDeep(content))
-    content = flattenDeep(writeMAIN(flattenDeep(content)))
+    content = writeMAIN(content.flat()).flat()
     
     return content;
 }

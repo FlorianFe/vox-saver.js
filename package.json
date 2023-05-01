@@ -1,6 +1,6 @@
 {
   "name": "vox-saver",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "Takes a JavaScript Object of .vox file data and returns a Byte Array with all the containing informations",
   "main": "index.js",
   "scripts": {
@@ -30,12 +30,10 @@
     "json-diff": "^0.5.4",
     "ramda": "^0.28.0",
     "typescript": "^4.5.4",
-    "vox-reader": "^2.1.2"
+    "vox-reader": "^2.1.2",
+    "lodash": "^4.17.21"
   },
   "ava": {
     "timeout": "2m"
-  },
-  "dependencies": {
-    "lodash": "^4.17.21"
   }
 }
