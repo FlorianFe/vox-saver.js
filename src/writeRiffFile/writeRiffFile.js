@@ -5,11 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const unparseVoxChunk_1 = __importDefault(require("../unparseVoxChunk/unparseVoxChunk"));
 const isObject_1 = __importDefault(require("lodash/isObject"));
 const write4ByteInteger_1 = __importDefault(require("../shared/write4ByteInteger/write4ByteInteger"));
-const flatten = (arr) => {
-    return arr.reduce((flat, toFlatten) => {
-        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-    }, []);
-};
+const lodash_1 = require("lodash");
 const writeMAIN = (content) => {
     return [
         "MAIN".split("").map(char => char.charCodeAt(0)),
@@ -27,8 +23,8 @@ const writeRiffFile = (voxStructure) => {
         }
         content.push((0, unparseVoxChunk_1.default)(key, value));
     });
-    console.log(flatten(content));
-    content = flatten(writeMAIN(flatten(content)));
+    console.log((0, lodash_1.flattenDeep)(content));
+    content = (0, lodash_1.flattenDeep)(writeMAIN((0, lodash_1.flattenDeep)(content)));
     return content;
 };
 module.exports = writeRiffFile;

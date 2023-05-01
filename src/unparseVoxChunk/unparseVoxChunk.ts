@@ -5,23 +5,21 @@ import {
   PACK, SIZE, XYZI, RGBA, 
   nTRN, nGRP, nSHP, MATL, 
   LAYR, rOBJ, rCAM, NOTE, IMAP} from "../../types/types";
+import { flattenDeep } from "lodash";
 
 const unreadDict = (data : { [key: string]: any}) =>
 {
     const entries = Object.entries(data)
     return [unreadInt(entries.length), entries.map(([k, v]) => [writeString(k), writeString(v)])];
 }
-const flatten = (arr : Array<any>) : Array<any> => {
-  return arr.reduce((flat, toFlatten) => {
-      return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-  }, []);
-};
 const unparseVoxChunk = (id : string, data : any): any[] =>
 {
   let chunk = []
   // base https://github.com/ephtracy/voxel-model/blob/master/MagicaVoxel-file-format-vox.txt
   chunk.push(id.toUpperCase().split("").map(char => char.charCodeAt(0)))
   
+  console.log(id, data);
+
   switch (id.toUpperCase()) {
     case "MAIN":
       throw Error("Main Chunk must be placed in root!")
@@ -43,21 +41,21 @@ const unparseVoxChunk = (id : string, data : any): any[] =>
       chunk.push(write4ByteInteger(4 + 4 * xyziValues.length)) // Header Size
       chunk.push(write4ByteInteger(0)) // no children
       chunk.push(write4ByteInteger(xyziValues.length)); 
-      chunk.push(flatten(xyziValues))
+      chunk.push(flattenDeep(xyziValues))
       break;
     case "RGBA":
       const rgbaValues = (data as RGBA).values.map(c => [c.r, c.g, c.b, c.a]);
 
-      chunk.push(write4ByteInteger(flatten(rgbaValues).length)) // Header Size
+      chunk.push(write4ByteInteger(flattenDeep(rgbaValues).length)) // Header Size
       chunk.push(write4ByteInteger(0)) // no children
-      chunk.push(flatten(rgbaValues))
+      chunk.push(flattenDeep(rgbaValues))
       break;
     default:  
       console.warn(`Unknown chunk ${id}`)
       return [];
   }
 
-  return flatten(chunk);
+  return flattenDeep(chunk);
 }
 
 export = unparseVoxChunk;

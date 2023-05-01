@@ -21,7 +21,7 @@ test('test extended.vox', (t) => {
 });
 test('generate sphere', (t) => {
     const SIZE = 20;
-    const RADIUS = 5;
+    const RADIUS = 8;
     const checkIfInsideSphere = (x, y, z) => {
         const cx = x - SIZE / 2;
         const cy = y - SIZE / 2;
